@@ -97,7 +97,18 @@ class Blockchain:
         max_length = len(self.chain)
         
         for nodes in network:
-            response = requests.get('{}/get_chain')
+            response = requests.get(f'http://{nodes}/get_chain')
+            if response.status_code == 200:
+                length = response.json()['length']
+                chain = response.json()['chain']
+                if length > max_length and self.is_chain_valid(chain):
+                    max_length = length
+                    longest_chain = chain
+        if longest_chain:
+            self.chain = longest_chain
+            return True
+        return False
+                
 # Part 2 -  Mining your Blockchain 
             
 
