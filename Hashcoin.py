@@ -138,7 +138,7 @@ def mine_block():
     return jsonify(response), 200
 
 # Checking if the blockchain is valid
-    
+  
 @app.route('/is_valid', methods = ['GET'])
 def is_valid():
     is_valid = blockchain.is_chain_valid(blockchain.chain)
@@ -146,7 +146,7 @@ def is_valid():
         response = {'message' : 'all good the blockchain is valid'}
     else:
         response = {'message' : 'blockchain is not valid tmkb'}
-    return jsonify(response), 200
+    return jsonify(response), 200  
 
 
 # Getting the Full Blockchain
@@ -168,6 +168,35 @@ def add_transaction():
     response = {'message': f'this transaction will be added in {index}'}
     return jsonify(response), 201
 # Part 3 - Decentralizing our blockchain
+    
+# Connecting new node 
+@app.route('/connect_node', methods = ['POST'])
+def connect_node():
+    json = requests.get_json()
+    nodes = json.get('nodes')
+    if nodes is None:
+        return 'No Nodes passed', 400
+    for node in nodes:
+        blockchain.add_node(node)
+        
+    response = {'message': 'All the nodes are now connected, Now HashCoin contains the following nodes',
+                'total_nodes': list(blockchain.nodes)
+                }
+    return jsonify(response), 201
+
+
+# Replace the chain that is not up to date 
+    
+@app.route('/replace_chain', methods = ['GET'])
+def replace_chain():
+    is_chain_replaced = blockchain.replace_chain()
+    if is_chain_replaced:
+        response = {'message' : 'The node had different chain so the chain has be replaced by another one',
+                    'new_chain': blockchain.chain}
+    else:
+        response = {'message' : 'All good , the chain is the lasrgest one ',
+                    'actual_chain': blockchain.chain }
+    return jsonify(response), 200  
 
 # Running the app 
 app.run(host = '0.0.0.0', port = 5000)
