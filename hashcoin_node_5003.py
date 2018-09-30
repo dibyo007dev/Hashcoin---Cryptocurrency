@@ -172,7 +172,7 @@ def add_transaction():
 # Connecting new node 
 @app.route('/connect_node', methods = ['POST'])
 def connect_node():
-    json = requests.get_json()
+    json = request.get_json()
     nodes = json.get('nodes')
     if nodes is None:
         return 'No Nodes passed', 400
