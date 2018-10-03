@@ -73,7 +73,7 @@ class Blockchain:
             previous_proof = previous_block['proof']
             proof = block['proof']
             hash_operation = hashlib.sha256(str(proof**2 - previous_proof**2).encode()).hexdigest()
-            if hash_operation != '0000':
+            if hash_operation[:4] != '0000':
                 return False
             
             previous_block = block
@@ -161,7 +161,7 @@ def get_chain():
 def add_transaction():
     json = request.get_json()
     transaction_keys = ['sender', 'receiver', 'amount']
-    if not all (key in json for key in transaction_keys):
+    if not all(key in json for key in transaction_keys):
         return 'Some elements of the transactions are missing', 400
     index =  blockchain.add_transaction(json['sender'], json['receiver'], json['amount'])
     
