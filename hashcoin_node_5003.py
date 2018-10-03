@@ -52,7 +52,7 @@ class Blockchain:
         check_proof = False
         while check_proof is False:
             hash_operation = hashlib.sha256(str(new_proof**2 - previous_proof**2).encode()).hexdigest()
-            if(hash_operation[:4] == '0000' ):
+            if hash_operation[:4] == '0000':
                 check_proof = True
             else:
                 new_proof += 1
@@ -80,10 +80,10 @@ class Blockchain:
             block_index += 1
         return True
     
-    def add_transaction(self, sender, reciever, amount):
+    def add_transaction(self, sender, receiver, amount):
         self.transactions.append({'sender': sender,
-                                  'reciever': reciever,
-                                  'amoiunt': amount})
+                                  'receiver': receiver,
+                                  'amount': amount})
         previous_block = self.get_previous_block()
         return previous_block['index'] + 1
         
@@ -96,8 +96,8 @@ class Blockchain:
         longest_chain = None
         max_length = len(self.chain)
         
-        for nodes in network:
-            response = requests.get(f'http://{nodes}/get_chain')
+        for node in network:
+            response = requests.get(f'http://{node}/get_chain')
             if response.status_code == 200:
                 length = response.json()['length']
                 chain = response.json()['chain']
@@ -127,7 +127,7 @@ def mine_block():
     previous_proof =  previous_block['proof']
     proof = blockchain.proof_of_work(previous_proof)
     previous_hash = blockchain.hash(previous_block)
-    blockchain.add_transaction(sender = node_address, reciever= 'HashMaster', amount = 1)
+    blockchain.add_transaction(sender = node_address, receiver = 'Vivek', amount = 1)
     block = blockchain.create_block(proof, previous_hash)
     response = {'message' : 'Congrats , you just mined a block ! and you block will be added in the blockchain',
                 'index': block['index'],
@@ -160,13 +160,15 @@ def get_chain():
 @app.route('/add_transaction', methods = ['POST'])
 def add_transaction():
     json = request.get_json()
-    transaction_keys = ['sender', 'reciever', 'amount']
+    transaction_keys = ['sender', 'receiver', 'amount']
     if not all (key in json for key in transaction_keys):
         return 'Some elements of the transactions are missing', 400
-    index =  blockchain.add_transaction(json['sender'], json['reciever'], json['amount'])
+    index =  blockchain.add_transaction(json['sender'], json['receiver'], json['amount'])
     
     response = {'message': f'this transaction will be added in {index}'}
     return jsonify(response), 201
+
+
 # Part 3 - Decentralizing our blockchain
     
 # Connecting new node 

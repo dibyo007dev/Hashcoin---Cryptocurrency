@@ -96,8 +96,8 @@ class Blockchain:
         longest_chain = None
         max_length = len(self.chain)
         
-        for nodes in network:
-            response = requests.get(f'http://{nodes}/get_chain')
+        for node in network:
+            response = requests.get(f'http://{node}/get_chain')
             if response.status_code == 200:
                 length = response.json()['length']
                 chain = response.json()['chain']
@@ -172,7 +172,7 @@ def add_transaction():
 # Connecting new node 
 @app.route('/connect_node', methods = ['POST'])
 def connect_node():
-    json = requests.get_json()
+    json = request.get_json()
     nodes = json.get('nodes')
     if nodes is None:
         return 'No Nodes passed', 400
@@ -192,10 +192,12 @@ def replace_chain():
     is_chain_replaced = blockchain.replace_chain()
     if is_chain_replaced:
         response = {'message' : 'The node had different chain so the chain has be replaced by another one',
-                    'new_chain': blockchain.chain}
+                    'new_chain': blockchain.chain
+                    }
     else:
         response = {'message' : 'All good , the chain is the lasrgest one ',
-                    'actual_chain': blockchain.chain }
+                    'actual_chain': blockchain.chain
+                    }
     return jsonify(response), 200  
 
 # Running the app 
